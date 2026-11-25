@@ -1,0 +1,22 @@
+Plotline catalogue
+
+Adapted from Vonter/karnataka-rera-projects by Kishore Krishnamoorthi:
+https://github.com/Vonter/karnataka-rera-projects
+Source commit: 6671e8b2f5e17733524acc1c29701e572bc16d3b
+Source publication date: 2026-09-07
+Original source: Karnataka Real Estate Regulatory Authority
+https://rera.karnataka.gov.in/
+
+The adapted registry.json database is made available under the Open Database License 1.0:
+https://opendatacommons.org/licenses/odbl/1-0/
+Some individual contents are under copyright by Karnataka RERA.
+
+Changes: selected project-level fields; removed individual identity, tax and bank details; normalized field names and numeric values; omitted invalid coordinates. No selling prices or user enquiries are inferred.
+
+The user's private notes, quotes, attachments and preferences are maintained separately and are not part of this public registry database.
+
+Research additions (24 November 2026):
+research-0.json through research-9.json are safe-field adaptations of the same Vonter Karnataka RERA CSV snapshot (7 September 2026), ODbL 1.0. No bank accounts, PANs or personal signatory/contact fields retained.
+places.json and location-ratings.json are derived from OpenStreetMap contributors, ODbL 1.0. Individual layer dates and incomplete extraction coverage are recorded in places.json.
+Metro station/line data adapted from Vonter/bmrcl-gtfs geojson/export.geojson (ODbL 1.0); source commit/date recorded in the dataset documentation. This is not an official BMRCL service feed.
+MapLibre GL JS (BSD-3-Clause), Leaflet (BSD-2-Clause), OpenFreeMap/OpenMapTiles/OSM attribution displayed on maps. No tiles are bundled or bulk downloaded.

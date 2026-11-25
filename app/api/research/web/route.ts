@@ -1,0 +1,4 @@
+import {searchWeb} from '../../../../lib/web-search';
+import {WEB_TOPICS,type WebTopic} from '../../../../lib/web-search-model';
+import {validRera} from '../../../../lib/report-schema';
+export async function GET(req:Request){const params=new URL(req.url).searchParams,rera=params.get('rera'),topic=params.get('topic')||'overview';if(!validRera(rera)||!Object.hasOwn(WEB_TOPICS,topic))return Response.json({error:'Select a registered project and a valid research topic.'},{status:400});try{return Response.json(await searchWeb(req,rera,topic as WebTopic,params.get('refresh')==='1'),{headers:{'Cache-Control':'private, no-store'}})}catch{return Response.json({error:'Web results could not be loaded. Your saved project details remain available.'},{status:503,headers:{'Cache-Control':'private, no-store'}})}}

@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {parseOfficial,parseCSV} from '../lib/registry-parser.ts';
+import {extractDetails} from '../lib/extract.ts';
+import {total} from '../lib/types.ts';
+const seed=JSON.parse(readFileSync(new URL('../public/data/registry.json',import.meta.url),'utf8'));
+assert.equal(seed.length,8923);assert.equal(seed.filter((p:any)=>p.district==='Bengaluru Urban'||p.district==='Bengaluru Rural').length,4756);
+assert.equal(new Set(seed.map((p:any)=>p.rera)).size,seed.length,'One entry per phase / registration');
+assert.ok(seed.every((p:any)=>p.lat===null||(p.lat>11&&p.lat<19&&p.lng>73&&p.lng<79)));
+const target=seed.find((p:any)=>p.district==='Bengaluru Urban');
+const extracted=extractDetails(`Project: ${target.name}\nRERA: ${target.rera}\n2 BHK, 1,250 sqft\nStarting at Rs 1.25 Cr plus 5 lakh parking. Call +91 9876543210`,seed);
+assert.equal(extracted.matches[0].rera,target.rera);assert.equal(extracted.money[0].amount,125);assert.equal(extracted.money[1].amount,5);assert.equal(extracted.area,1250);assert.equal(extracted.bhk,'2');
+const noRera=extractDetails('Property has no RERA number. 2BHK 900sqft',seed);assert.equal(noRera.rera,'');assert.equal(noRera.money.length,0);
+const reg='PRM/KA/RERA/1251/310/PR/171126/009110';
+const html=`<script>applicationNameList1.push('19812');applicationNameList2.push('${reg}');applicationNameList3.push('Builder\\'s Garden');applicationNameList4.push('A &amp; B LLP');</script>`;
+const parsed=parseOfficial(html);assert.equal(parsed.length,1);assert.equal(parsed[0].name,"Builder's Garden");assert.equal(parsed[0].rera,reg);assert.equal(parsed[0].builder,'A & B LLP');
+assert.equal(parseOfficial('<html>Invalid Request!</html>').length,0);assert.equal(parseOfficial('<html>Sign in</html>').length,0);
+const table=`<table><tr><th>Registration Number</th><th>Project Name</th><th>Promoter</th><th>District</th></tr><tr><td>${reg}</td><td>Garden</td><td>Builder</td><td>Bengaluru Urban</td></tr></table>`;assert.equal(parseOfficial(table)[0].district,'Bengaluru Urban');
+const csv='project_id,reg_number,project_name,promoter_name,district,latitude,longitude\r\n1,'+reg+',"Garden, Phase 1","Builder ""A""",Bengaluru Urban,12.9,77.6\r\n';const c=parseCSV(csv);assert.equal(c[0].name,'Garden, Phase 1');assert.equal(c[0].builder,'Builder "A"');assert.equal(c[0].lat,12.9);assert.throws(()=>parseCSV('not,a,registry\n1,2,3'));
+assert.equal(total({amount:100,extras:5,taxes:8} as any),113);assert.equal(total(undefined),null);
+console.log('Core checks passed: catalogue identities and coordinates; exact RERA matching; price / area extraction; official-page parsers; invalid-response rejection; CSV quoting; all-in cost arithmetic.');
+
+const transfer="TOR/"+reg;const t=extractDetails("RERA "+transfer,[{...target,rera:transfer}]);assert.equal(t.matches.length,1);assert.equal(t.rera,transfer);assert.equal(parseCSV(csv.replace(reg,transfer))[0].rera,transfer);console.log("Transferred-registration prefixes preserved and matched exactly.");

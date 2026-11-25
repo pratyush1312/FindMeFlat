@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {assessAccess,distanceKm,nameMatches,parseOfficialDetail} from '../lib/research-model.ts';
+assert.equal(assessAccess(null,null,[],null).rating,'Not assessed');
+assert.equal(assessAccess(12.9,77.6,[],null).score,null,'No source coverage is not a poor rating');
+assert.equal(assessAccess(15,76,[],'2026-11-24').rating,'Not assessed','Outside extraction coverage remains unknown');
+assert.ok(Math.abs(distanceKm(12.9,77.6,12.91,77.6)-1.112)<.01);
+const places=['metro','hospital','school','daily','park'].map((kind,i)=>({id:String(i),name:kind,kind,lat:12.9,lng:77.6,url:'https://www.openstreetmap.org/node/'+i})) as any;
+const good=assessAccess(12.9,77.6,places,'2026-11-24');assert.equal(good.score,100);assert.equal(good.rating,'Good');assert.equal(good.places.length,5);
+assert.equal(assessAccess(12.9,77.6,[],'2026-11-24').rating,'Poor','Poor means low mapped facility access, never a safety verdict');
+assert.equal(nameMatches('Prestige Park Grove','Prestige Grove Park'),true);assert.equal(nameMatches('Sobha Neopolis Phase 2 - W12','Sobha Neopolis'),true);assert.equal(nameMatches('Prestige Park Grove','Prestige Lakeside Habitat'),false);
+const p={rera:'PRM/KA/RERA/1251/446/PR/100823/006141',name:'Prestige Park Grove'} as any;
+const row=(k:string,v:string)=>`<div class="row"><div><p class="text-right">${k}</p></div><div>${v}</div></div>`;
+const html=p.rera+row('Project Name','Prestige Park Grove')+Array.from({length:9},(_,i)=>row('Project disclosed field '+i,'Value')).join('')+row('Bank Account Number','123456')+row('PAN','secret');
+const parsed=parseOfficialDetail(html,p);assert.equal(Object.keys(parsed.fields).length,10);assert.ok(!JSON.stringify(parsed).includes('123456'));assert.throws(()=>parseOfficialDetail(html.replace(p.rera,'OTHER'),p));assert.throws(()=>parseOfficialDetail(html.replace('Prestige Park Grove','Unrelated Project'),p));assert.throws(()=>parseOfficialDetail('Invalid Request! '+p.rera,p));
+console.log('Research checks passed: unknown versus poor access, geographic coverage, distance arithmetic, category weights, project/phase identity, official detail validation, and excluded personal/bank fields.');

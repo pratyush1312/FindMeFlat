@@ -1,0 +1,2 @@
+import {buildDossier} from '../../../lib/research';
+export async function GET(req:Request){const rera=new URL(req.url).searchParams.get('rera')||'';if(!/^(?:TOR\/)?PRM\/KA\/RERA\/\d+\/\d+\/PR\/\d+\/\d+$/.test(rera))return Response.json({error:'Select an exact RERA registration.'},{status:400});try{return Response.json(await buildDossier(req,rera),{headers:{'Cache-Control':'private, no-store'}})}catch(e){return Response.json({error:e instanceof Error?e.message:'Research unavailable'},{status:503})}}

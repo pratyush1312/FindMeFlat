@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1795527528059,
+      "tag": "0000_new_albert_cleary",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795531852375,
+      "tag": "0001_burly_veda",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795541071038,
+      "tag": "0002_mighty_katie_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1795541694743,
+      "tag": "0003_pretty_rage",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795588955233,
+      "tag": "0004_yellow_ted_forrester",
+      "breakpoints": true
+    }
+  ]
+}
