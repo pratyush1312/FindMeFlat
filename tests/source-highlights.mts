@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {sourceHighlights} from '../lib/source-highlights.ts';
+import type {SearchHit} from '../lib/web-search-model.ts';
+const hit=(snippet:string,kind='Developer website'):SearchHit=>({snippet,kind,url:'https://example.org/project',title:'Example project',domain:'example.org',phaseMatched:false,publishedAt:null});
+assert.deepEqual(sourceHighlights([]),[],'Missing evidence must stay missing');
+const price=sourceHighlights([hit('Starting at ₹1.3 Cr, excluding taxes. Possession proposed in 2029.')]);
+assert.equal(price[0].excerpt,'Starting at ₹1.3 Cr, excluding taxes.');
+assert.equal(price[0].source.phaseMatched,false);
+assert.equal(price[0].source.publishedAt,null);
+assert.equal(price[1].excerpt,'Possession proposed in 2029.');
+assert.equal(sourceHighlights([hit('No complaints and no delays: buy today!')]).length,0,'Developer marketing is not complaint evidence');
+const report=sourceHighlights([hit('Buyers allege possession delays; the developer disputes the claim.','News report')]);
+assert.ok(report.some(h=>h.label==='Complaint / delay mention'&&h.excerpt.includes('developer disputes')),'Keep qualifications in source wording');
+console.log('Source highlights passed: qualifications preserved, unknown dates/phase retained, no invented findings, promotional complaint claims excluded.');
